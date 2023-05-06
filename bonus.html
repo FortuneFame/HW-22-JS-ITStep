@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Редактор текста</title>
+    <style>
+        textarea {
+            display: none;
+            width: 100%;
+            height: 200px;
+            font-size: 16px;
+            border: 1px solid black;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="textDiv">
+        <p>Пример текста, который можно отредактировать.</p>
+    </div>
+    <textarea id="textArea"></textarea>
+    <script>
+        window.onload = function () {
+            const textDiv = document.getElementById("textDiv");
+            const textArea = document.getElementById("textArea");
+            let isEditMode = false;
+
+            // При нажатии Ctrl + E отображаем textarea
+            document.addEventListener("keydown", function (event) {
+                if (event.ctrlKey && event.keyCode == 69) {
+                    event.preventDefault(); // Отменяем стандартное действие комбинации
+                    textArea.value = textDiv.textContent.trim();
+                    textArea.style.display = "block";
+                    textDiv.style.display = "none";
+                    textArea.focus();
+                    isEditMode = true;
+                }
+            });
+
+            // При нажатии Ctrl + S сохраняем изменения и отображаем div
+            document.addEventListener("keydown", function (event) {
+                if (event.ctrlKey && event.keyCode == 83) {
+                    event.preventDefault(); // Отменяем стандартное действие комбинации
+                    if (isEditMode) {
+                        textDiv.textContent = textArea.value;
+                        textDiv.style.display = "block";
+                        textArea.style.display = "none";
+                        isEditMode = false;
+                    }
+                }
+            });
+        };
+    </script>
+</body>
+
+</html>

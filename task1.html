@@ -1,0 +1,117 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Phone book</title>
+    <style>
+        body {
+            font-family: "Courier New", Courier, monospace;
+            background-color: #f5f5f5;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        form {
+            width: 60%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input,
+        select {
+            margin: 5px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+
+        input[type="button"],
+        input[type="submit"],
+        input[type="reset"] {
+            cursor: pointer;
+            padding: 8px 12px;
+            background-color: #2c3e50;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            border-radius: 3px;
+        }
+
+        input[type="button"]:hover,
+        input[type="submit"]:hover,
+        input[type="reset"]:hover {
+            background-color: #34495e;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Add new contact</h2>
+    <form method='GET'>
+        <b>Name </b><input type="text" placeholder="Enter name" name="name" required />
+        <div style="margin:10px 0;">
+            Phone number <input type="text" name="phone" id="ph" placeholder="Enter phone number" required />
+            Phone type <select name="type">
+                <option value="1" selected>Cellular</option>
+                <option value="2">Home</option>
+                <option value="3">Work</option>
+            </select>
+            Priority <input type="radio" name="main" value="1" checked />
+
+        </div>
+        <input type="button" value="One more phone" onclick="add_click()" />
+        <div>
+            Date of birth <input type="date" name="dob" />
+            Email <input type="email" name="email" placeholder="Enter email" />
+            Website <input type="url" name="website" placeholder="Enter website" />
+            Secret word <input type="password" name="secret" placeholder="Enter secret word" />
+            Favorite color <input type="color" name="color" />
+        </div>
+
+        <input type="submit" value="Save" style="margin-left:50px" />
+        <input type="reset" value="Reset" />
+    </form>
+    <script>
+        let phoneCounter = 1;
+        let phoneNameCounter = 1;
+
+        const add_click = () => {
+            phoneCounter++;
+            phoneNameCounter++;
+
+            const f = document.forms[0];
+            const line = f.children[2];
+            const newLine = line.cloneNode(true);
+
+            newLine.children[0].name = `phone${phoneNameCounter}`;
+            newLine.children[0].value = '';
+            newLine.children[1].name = `type${phoneNameCounter}`;
+            newLine.children[2].checked = false;
+
+            const removeButton = document.createElement('input');
+            removeButton.type = 'button';
+            removeButton.value = 'Remove';
+            removeButton.addEventListener('click', rem_click);
+            removeButton.style.marginLeft = '5px';
+
+            newLine.appendChild(removeButton);
+            f.insertBefore(newLine, f.children[phoneCounter + 1]);
+        }
+
+        const rem_click = (event) => {
+            const line = event.target.closest('div');
+            const f = document.forms[0];
+            f.removeChild(line);
+            phoneCounter--;
+        }
+    </script>
+</body>
+
+</html>

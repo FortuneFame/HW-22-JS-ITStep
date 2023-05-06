@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add and Remove Colors</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        h1 {
+            margin: 0;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+        }
+
+        form {
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form label {
+            display: inline-block;
+            width: 30px;
+            font-weight: bold;
+        }
+
+        form input[type="number"] {
+            width: 60px;
+            padding: 5px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            padding: 10px;
+            margin: 5px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        form button[type="button"]:hover {
+            background-color: #444;
+        }
+
+        table {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-collapse: collapse;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        td,
+        th {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: center;
+            color: #333;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        #colors-table {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Add and Remove Colors</h1>
+
+    <form>
+        <label for="r-input">Red:</label>
+        <input type="number" id="r-input" min="0" max="255" required>
+
+        <label for="g-input">Green:</label>
+        <input type="number" id="g-input" min="0" max="255" required>
+
+        <label for="b-input">Blue:</label>
+        <input type="number" id="b-input" min="0" max="255" required>
+
+        <button type="submit" id="add-color-btn">Add Color</button>
+    </form>
+
+    <table id="colors-table">
+        <thead>
+            <tr>
+                <th>Color</th>
+                <th>RGB</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <button id="remove-color-btn">Remove Color</button>
+
+    <script>
+        // Массив объектов с добавленными цветами
+        const colors = [];
+        const form = document.querySelector('form');
+        const addColorBtn = document.querySelector('#add-color-btn');
+        const colorsTableBody = document.querySelector('#colors-table tbody');
+        const removeColorBtn = document.querySelector('#remove-color-btn');
+
+        // Обработчик отправки формы
+        form.addEventListener('submit', (event) => {
+            event.preventDefault(); // Отменяем стандартное поведение формы
+
+            const rInput = document.querySelector('#r-input');
+            const gInput = document.querySelector('#g-input');
+            const bInput = document.querySelector('#b-input');
+
+            // Проверяем, не был ли такой цвет уже добавлен
+            if (colors.some(color => color.r === rInput.value && color.g === gInput.value && color.b === bInput.value)) {
+                alert('This color already exists!');
+                return;
+            }
+
+            const color = {
+                r: rInput.value,
+                g: gInput.value,
+                b: bInput.value
+            };
+
+            colors.push(color);
+
+            const tr = document.createElement('tr');
+            const td1 = document.createElement('td');
+            td1.style.backgroundColor = `rgb(${color.r}, ${color.g}, ${color.b})`;
+            const td2 = document.createElement('td');
+            td2.textContent = `(${color.r}, ${color.g}, ${color.b})`;
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            colorsTableBody.appendChild(tr);
+
+            // Очищаем поля ввода
+            rInput.value = '';
+            gInput.value = '';
+            bInput.value = '';
+
+            colorsTableBody.parentNode.style.display = 'table'; // Отображаем таблицу
+        });
+
+        // Обработчик нажатия на кнопку "Remove Color"
+        removeColorBtn.addEventListener('click', () => {
+            colors.pop(); // Удаляем последний добавленный цвет
+
+            colorsTableBody.deleteRow(-1);
+
+            if (colors.length === 0) {
+                colorsTableBody.parentNode.style.display = 'none'; // Скрываем таблицу, если цветов больше нет
+            }
+        });
+    </script>
+
+</body>
+
+</html>
