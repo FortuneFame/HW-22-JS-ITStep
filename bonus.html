@@ -1,50 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Редактор текста</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bonus</title>
     <style>
+        body {
+            font-family: "Courier New", Courier, monospace;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+
         textarea {
             display: none;
-            width: 100%;
+            width: 1000px;
             height: 200px;
             font-size: 16px;
-            border: 1px solid black;
             padding: 5px;
-            box-sizing: border-box;
+            margin: auto;
+            margin-top: 40px;
+            resize: none;
+        }
+
+        h1 {
+            background-color: #333;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            font-weight: 900;
+        }
+        h3{
+            margin-left: 60px;
+        }
+
+        .boxTitle {
+            border-bottom: 1px solid #212121;
+        }
+
+        .box {
+            width: 1000px;
+            margin: auto;
+            margin-top: 40px;
+            margin-bottom: 40px;
         }
     </style>
 </head>
 
 <body>
-    <div id="textDiv">
-        <p>Пример текста, который можно отредактировать.</p>
+    <div class="boxTitle">
+        <h1>Text editing</h1>
+        <h3>Press "Ctrl+E" for <u>edit</u> text.</h3>
+        <h3>Press "Ctrl+S" for <u>save</u> text.</h3>
+    </div>
+    <div class="box" id="textDiv">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
+        aliqua. Eu facilisis sed odio morbi. In nibh mauris cursus mattis molestie a. Magna ac placerat vestibulum lectus mauris
+        ultrices eros in cursus. Eu sem integer vitae justo eget magna. Amet est placerat in egestas. Vitae purus faucibus
+        ornare suspendisse sed nisi lacus sed viverra. Quis eleifend quam adipiscing vitae. Sed enim ut sem viverra aliquet eget
+        sit. Et magnis dis parturient montes nascetur ridiculus mus mauris vitae. Scelerisque viverra mauris in aliquam sem
+        fringilla ut. Ullamcorper malesuada proin libero nunc consequat interdum varius sit.</p>
     </div>
     <textarea id="textArea"></textarea>
+
     <script>
+
         window.onload = function () {
             const textDiv = document.getElementById("textDiv");
             const textArea = document.getElementById("textArea");
             let isEditMode = false;
-
-            // При нажатии Ctrl + E отображаем textarea
             document.addEventListener("keydown", function (event) {
-                if (event.ctrlKey && event.keyCode == 69) {
-                    event.preventDefault(); // Отменяем стандартное действие комбинации
-                    textArea.value = textDiv.textContent.trim();
+                if (event.ctrlKey && event.keyCode == 69) { // Ctrl+E
+                    event.preventDefault();
+
+                    textArea.value = textDiv.innerText.trim().replace("\n", "\n");
                     textArea.style.display = "block";
                     textDiv.style.display = "none";
-                    textArea.focus();
-                    isEditMode = true;
-                }
-            });
 
-            // При нажатии Ctrl + S сохраняем изменения и отображаем div
-            document.addEventListener("keydown", function (event) {
-                if (event.ctrlKey && event.keyCode == 83) {
-                    event.preventDefault(); // Отменяем стандартное действие комбинации
+                    textArea.focus();
+
+                    isEditMode = true;
+
+                    textArea.addEventListener("keydown", function (event) {
+                        if (event.keyCode == 13) { // Enter
+                            event.preventDefault();
+
+                            const selectionStart = this.selectionStart;
+                            const selectionEnd = this.selectionEnd;
+
+                            this.value = this.value.substring(0, selectionStart) + "\n" + this.value.substring(selectionEnd);
+                            this.setSelectionRange(selectionStart + 1, selectionStart + 1);
+                        }
+                    });
+                } else if (event.ctrlKey && event.keyCode == 83) { // Ctrl+S
+                    event.preventDefault();
                     if (isEditMode) {
-                        textDiv.textContent = textArea.value;
+                        textDiv.innerText = textArea.value.trim();
                         textDiv.style.display = "block";
                         textArea.style.display = "none";
                         isEditMode = false;
@@ -52,6 +105,7 @@
                 }
             });
         };
+
     </script>
 </body>
 

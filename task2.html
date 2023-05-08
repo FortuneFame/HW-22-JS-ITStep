@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>Add and Remove Colors</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 2</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Courier New", Courier, monospace;
             margin: 0;
             padding: 0;
             background-color: #f7f7f7;
@@ -15,11 +17,20 @@
         h1 {
             margin: 0;
             padding: 20px;
+            text-align: center;
             background-color: #333;
             color: #fff;
         }
 
+        h3{
+            display: block;
+            width: 190px;
+        }
+
         form {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
             padding: 20px;
             background-color: #fff;
             border: 1px solid #ddd;
@@ -29,7 +40,7 @@
 
         form label {
             display: inline-block;
-            width: 30px;
+            width: max-content;
             font-weight: bold;
         }
 
@@ -45,138 +56,164 @@
 
         button {
             padding: 10px;
-            margin: 5px;
             background-color: #333;
             color: #fff;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             font-size: 16px;
             cursor: pointer;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
 
-        form button[type="button"]:hover {
+        button:hover {
             background-color: #444;
         }
 
-        table {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-collapse: collapse;
-            margin-top: 20px;
-            width: 100%;
+        #add-color-btn{
+            margin-right: 40px;
         }
 
-        td,
-        th {
-            border: 1px solid black;
-            padding: 5px;
-            text-align: center;
+        .box {
+            margin-right: 40px;
+        }
+
+        .colors-container {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 40px;
+            padding: 0 80px 0 100px;
+        }
+
+        .color-item:not(:last-child) {
+            margin-right: 40px;
+        }
+
+        .color-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 270px;
+            margin-bottom: 40px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .color-item div {
+            margin-right: 10px;
+            width: 40px;
+            height: 40px;
+        }
+
+        .color-item h3 {
+            margin: 0;
+            font-size: 16px;
             color: #333;
         }
 
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        #colors-table {
-            display: none;
+        .remove-color-btn {
+            padding: 2px 5px;
+            margin-right: 5px;
         }
     </style>
 </head>
 
 <body>
-    <h1>Add and Remove Colors</h1>
+    <h1>Palette of Colors</h1>
 
-    <form>
-        <label for="r-input">Red:</label>
-        <input type="number" id="r-input" min="0" max="255" required>
+    <form method="GET">
+        <div class="box">
+            <label for="r-input">Red:</label>
+            <input type="number" id="r-input" min="0" max="255" value="0" required pattern="[0-9]*">
 
-        <label for="g-input">Green:</label>
-        <input type="number" id="g-input" min="0" max="255" required>
+            <label for="g-input">Green:</label>
+            <input type="number" id="g-input" min="0" max="255" value="0" required pattern="[0-9]*">
 
-        <label for="b-input">Blue:</label>
-        <input type="number" id="b-input" min="0" max="255" required>
+            <label for="b-input">Blue:</label>
+            <input type="number" id="b-input" min="0" max="255" value="0" required pattern="[0-9]*">
+        </div>
 
-        <button type="submit" id="add-color-btn">Add Color</button>
+        <button id="add-color-btn">Add Color</button>
+        <button id="random-color-btn">Random Color</button>
     </form>
 
-    <table id="colors-table">
-        <thead>
-            <tr>
-                <th>Color</th>
-                <th>RGB</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-
-    <button id="remove-color-btn">Remove Color</button>
+    <div class="colors-container" id="colors-container">
+    </div>
 
     <script>
-        // Массив объектов с добавленными цветами
-        const colors = [];
+        const inputs = document.querySelectorAll('input[type="number"]');
         const form = document.querySelector('form');
         const addColorBtn = document.querySelector('#add-color-btn');
-        const colorsTableBody = document.querySelector('#colors-table tbody');
-        const removeColorBtn = document.querySelector('#remove-color-btn');
+        const colorsContainer = document.querySelector('#colors-container');
+        const randomColorBtn = document.querySelector('#random-color-btn');
+        const colors = [];
 
-        // Обработчик отправки формы
+        // Создать элемент списка цветов
+        const createColorItem = (color) => {
+            const colorItem = document.createElement('div');
+            colorItem.classList.add('color-item');
+            colorItem.innerHTML = `<div style="background-color: rgb(${color.r}, ${color.g}, ${color.b})"></div> <h3>RGB (${color.r}, ${color.g}, ${color.b})</h3>`;
+
+            const removeBtn = document.createElement('button');
+            removeBtn.classList.add('remove-color-btn');
+            removeBtn.textContent = 'Х';
+            removeBtn.addEventListener('click', () => {
+                colorsContainer.removeChild(colorItem);
+                const colorIndex = colors.findIndex(c => c.r === color.r && c.g === color.g && c.b === color.b);
+                colors.splice(colorIndex, 1);
+            });
+
+            colorItem.appendChild(removeBtn);
+            return colorItem;
+        };
+
+        // Ограничения ввода только чисел
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                input.value = input.value.replace(/[^0-9]/g, '');
+            });
+        });
+
+        // Отправки формы
         form.addEventListener('submit', (event) => {
-            event.preventDefault(); // Отменяем стандартное поведение формы
-
-            const rInput = document.querySelector('#r-input');
-            const gInput = document.querySelector('#g-input');
-            const bInput = document.querySelector('#b-input');
-
-            // Проверяем, не был ли такой цвет уже добавлен
-            if (colors.some(color => color.r === rInput.value && color.g === gInput.value && color.b === bInput.value)) {
-                alert('This color already exists!');
-                return;
-            }
+            event.preventDefault();
 
             const color = {
-                r: rInput.value,
-                g: gInput.value,
-                b: bInput.value
+                r: parseInt(inputs[0].value),
+                g: parseInt(inputs[1].value),
+                b: parseInt(inputs[2].value)
+            };
+
+            if (colors.some(c => c.r === color.r && c.g === color.g && c.b === color.b)) {
+                alert('This color already exists!');
+                return;
             };
 
             colors.push(color);
 
-            const tr = document.createElement('tr');
-            const td1 = document.createElement('td');
-            td1.style.backgroundColor = `rgb(${color.r}, ${color.g}, ${color.b})`;
-            const td2 = document.createElement('td');
-            td2.textContent = `(${color.r}, ${color.g}, ${color.b})`;
-            tr.appendChild(td1);
-            tr.appendChild(td2);
-            colorsTableBody.appendChild(tr);
-
-            // Очищаем поля ввода
-            rInput.value = '';
-            gInput.value = '';
-            bInput.value = '';
-
-            colorsTableBody.parentNode.style.display = 'table'; // Отображаем таблицу
+            colorsContainer.appendChild(createColorItem(color));
+            // inputs.forEach(input => input.value = '');
         });
 
-        // Обработчик нажатия на кнопку "Remove Color"
-        removeColorBtn.addEventListener('click', () => {
-            colors.pop(); // Удаляем последний добавленный цвет
+        // Создание случайного цвета
+        randomColorBtn.addEventListener('click', () => {
+            const color = {
+                r: Math.floor(Math.random() * 256),
+                g: Math.floor(Math.random() * 256),
+                b: Math.floor(Math.random() * 256)
+            };
 
-            colorsTableBody.deleteRow(-1);
+            if (colors.some(c => c.r === color.r && c.g === color.g && c.b === color.b)) {
+                randomColorBtn.click();
+                return;
+            };
 
-            if (colors.length === 0) {
-                colorsTableBody.parentNode.style.display = 'none'; // Скрываем таблицу, если цветов больше нет
-            }
+            inputs[0].value = color.r;
+            inputs[1].value = color.g;
+            inputs[2].value = color.b;
         });
+
     </script>
-
 </body>
 
 </html>
